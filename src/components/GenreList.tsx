@@ -1,9 +1,9 @@
 import useGenres from "../hooks/useGenres";
 
 const GenreList = () => {
-  const { error, genres, isLoading } = useGenres();
-  console.log({ error, genres, isLoading });
-  return <div></div>;
+  const { error, data, isLoading } = useGenres();
+  console.log({ error, data, isLoading });
+  return <div>ss</div>;
 };
 
 export default GenreList;
