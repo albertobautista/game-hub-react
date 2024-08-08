@@ -28,7 +28,6 @@ const PlatformSelector = ({
             {platform.name}
           </MenuItem>
         ))}
-        <MenuItem>PC</MenuItem>
       </MenuList>
     </Menu>
   );
