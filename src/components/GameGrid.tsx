@@ -1,43 +1,66 @@
-import { SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Button, SimpleGrid, Text } from "@chakra-ui/react";
+import React from "react";
+import { GameQuery } from "../App";
 import useGames from "../hooks/useGames";
 import GameCard from "./GameCard";
-import GameCardSkeleton from "./GameCardSkeleton";
 import GameCardContainer from "./GameCardContainer";
-import { GameQuery } from "../App";
+import GameCardSkeleton from "./GameCardSkeleton";
 
 interface GameGridProps {
   gameQuery: GameQuery;
 }
 
 const GameGrid = ({ gameQuery }: GameGridProps) => {
-  const { error, data: games, isLoading } = useGames(gameQuery);
+  const {
+    error,
+    data: games,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useGames(gameQuery);
   const skeletons = Array.from({ length: 12 });
 
   if (error) return <Text>{error.message}</Text>;
 
   return (
-    <SimpleGrid
-      columns={{
-        sm: 1,
-        md: 2,
-        lg: 3,
-        xl: 4,
-      }}
-      spacing={6}
-      padding="10px"
-    >
-      {isLoading &&
-        skeletons.map((_, index) => (
-          <GameCardContainer key={index}>
-            <GameCardSkeleton />
-          </GameCardContainer>
+    <Box padding="10px">
+      <SimpleGrid
+        columns={{
+          sm: 1,
+          md: 2,
+          lg: 3,
+          xl: 4,
+        }}
+        spacing={6}
+      >
+        {isLoading &&
+          skeletons.map((_, index) => (
+            <GameCardContainer key={index}>
+              <GameCardSkeleton />
+            </GameCardContainer>
+          ))}
+        {games?.pages.map((page, index) => (
+          <React.Fragment key={index}>
+            {page.results.map((game) => (
+              <GameCardContainer key={`${game.id}-${game.name}`}>
+                <GameCard game={game} />
+              </GameCardContainer>
+            ))}
+          </React.Fragment>
         ))}
-      {games?.results.map((game) => (
-        <GameCardContainer key={`${game.id}-${game.name}`}>
-          <GameCard game={game} />
-        </GameCardContainer>
-      ))}
-    </SimpleGrid>
+      </SimpleGrid>
+      {hasNextPage && (
+        <Button
+          marginY={5}
+          onClick={() => fetchNextPage()}
+          isLoading={isFetchingNextPage}
+          loadingText="Loading more games..."
+        >
+          {isFetchingNextPage ? "Loading more games..." : "Load more"}
+        </Button>
+      )}
+    </Box>
   );
 };
 
